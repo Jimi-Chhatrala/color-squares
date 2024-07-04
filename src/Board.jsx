@@ -3,29 +3,36 @@ import React, { useState, useEffect } from "react";
 import Square from "./Square";
 import "./App.css";
 
+const colors = [
+  "blue",
+  "red",
+  "green",
+  "yellow",
+  "purple",
+  "orange",
+  "cyan",
+  "magenta",
+];
+
 const Board = () => {
-  const [colors, setColors] = useState(Array(9).fill("white"));
+  const [squares, setSquares] = useState(
+    Array(9).fill({ color: "white", number: null })
+  );
   const [clickedIndices, setClickedIndices] = useState([]);
-  const [numbers, setNumbers] = useState(Array(9).fill(null));
   const [allClicked, setAllClicked] = useState(false);
   const [clickCount, setClickCount] = useState(0);
 
   const handleSquareClick = (index) => {
-    if (!allClicked && colors[index] === "white") {
-      const newColors = [...colors];
-      newColors[index] = "blue";
-      setColors(newColors);
-
-      const newNumbers = [...numbers];
-      setClickCount((prevCount) => {
-        newNumbers[index] = prevCount + 1;
-        return prevCount + 1;
-      });
-      setNumbers(newNumbers);
+    if (!allClicked && squares[index].color === "white") {
+      const newSquares = [...squares];
+      const newColor = colors[clickCount % colors.length];
+      newSquares[index] = { color: newColor, number: clickCount + 1 };
+      setSquares(newSquares);
 
       setClickedIndices((prev) => [...prev, index]);
+      setClickCount((prevCount) => prevCount + 1);
 
-      if (newColors.every((color) => color === "blue")) {
+      if (newSquares.every((square) => square.color !== "white")) {
         setAllClicked(true);
       }
     }
@@ -38,15 +45,14 @@ const Board = () => {
         const interval = setInterval(() => {
           if (i >= 0) {
             const index = clickedIndices[i];
-            setColors((prevColors) => {
-              const newColors = [...prevColors];
-              newColors[index] = "white";
-              return newColors;
-            });
-            setNumbers((prevNumbers) => {
-              const newNumbers = [...prevNumbers];
-              newNumbers[index] = null;
-              return newNumbers;
+            setSquares((prevSquares) => {
+              const newSquares = [...prevSquares];
+              newSquares[index] = {
+                ...newSquares[index],
+                color: "white",
+                number: null,
+              };
+              return newSquares;
             });
             i--;
           } else {
@@ -64,13 +70,13 @@ const Board = () => {
 
   return (
     <div className="board">
-      {colors.map((color, index) => (
+      {squares.map((square, index) => (
         <Square
           key={index}
           index={index}
-          color={color}
+          color={square.color}
+          number={square.number}
           onClick={handleSquareClick}
-          number={numbers[index]}
         />
       ))}
     </div>

@@ -18,7 +18,7 @@ const Square = ({ index, color, onClick, number }) => {
 
   return (
     <div style={styles} onClick={() => onClick(index)}>
-      {number}
+      {number !== null && number}
     </div>
   );
 };
